@@ -117,11 +117,6 @@ func (f *Formatter) pretty(v interface{}, depth int) string {
 }
 
 func (f *Formatter) processString(s string, depth int) string {
-	// r := []rune(s)
-	// if f.StringMaxLength != 0 && len(r) >= f.StringMaxLength {
-	// 	s = string(r[0:f.StringMaxLength]) + "..."
-	// }
-
 	//check xml or not
 	isXML := false
 	if xml.Unmarshal([]byte(s), new(interface{})) == nil {
@@ -136,6 +131,7 @@ func (f *Formatter) processString(s string, depth int) string {
 	s = strings.TrimSuffix(s, "\n")
 
 	if isXML {
+		//format after JSON encoding
 		p := f.generateIndent(depth)
 		s = xmlfmt.FormatXML(s, p, "  ")
 		//remove indent string
