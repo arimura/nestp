@@ -12,8 +12,9 @@ func Parse() {
 	for scanner.Scan() {
 		j += scanner.Text()
 	}
-	fmt.Println(j)
 	s, e := Format([]byte(j))
+	if e != nil {
+		panic(e)
+	}
 	fmt.Println(string(s))
-	fmt.Println(e)
 }

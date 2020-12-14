@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/go-xmlfmt/xmlfmt"
 )
 
 // Formatter is a struct to format JSON data. `color` is github.com/fatih/color: https://github.com/fatih/color
@@ -126,6 +127,9 @@ func (f *Formatter) processString(s string) string {
 	encoder.Encode(s)
 	s = string(buf.Bytes())
 	s = strings.TrimSuffix(s, "\n")
+
+	//parse as xml
+	s = xmlfmt.FormatXML(s, "\t", "  ")
 
 	return f.sprintColor(f.StringColor, s)
 }
