@@ -3,6 +3,7 @@ package nestp
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"sort"
 	"strconv"
@@ -97,7 +98,7 @@ func (f *Formatter) sprintColor(c *color.Color, s string) string {
 func (f *Formatter) pretty(v interface{}, depth int) string {
 	switch val := v.(type) {
 	case string:
-		return f.processString(val)
+		return f.processString(val, depth)
 	case float64:
 		return f.sprintColor(f.NumberColor, strconv.FormatFloat(val, 'f', -1, 64))
 	case json.Number:
@@ -115,7 +116,7 @@ func (f *Formatter) pretty(v interface{}, depth int) string {
 	return ""
 }
 
-func (f *Formatter) processString(s string) string {
+func (f *Formatter) processString(s string, depth int) string {
 	r := []rune(s)
 	if f.StringMaxLength != 0 && len(r) >= f.StringMaxLength {
 		s = string(r[0:f.StringMaxLength]) + "..."
@@ -129,7 +130,9 @@ func (f *Formatter) processString(s string) string {
 	s = strings.TrimSuffix(s, "\n")
 
 	//parse as xml
-	s = xmlfmt.FormatXML(s, "\t", "  ")
+	if xml.Unmarshal([]byte(s), new(interface{})) != nil {
+		s = xmlfmt.FormatXML(s, f.generateIndent(depth), "  ")
+	}
 
 	return f.sprintColor(f.StringColor, s)
 }
