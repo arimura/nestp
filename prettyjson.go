@@ -134,11 +134,10 @@ func (f *Formatter) processString(s string, depth int) string {
 		//format after JSON encoding
 		p := f.generateIndent(depth)
 		s = xmlfmt.FormatXML(s, p, "  ")
-		//remove indent string
+		//remove first indent string
 		s = s[len(p):]
 	}
 
-	// fmt.Println(s)
 	return f.sprintColor(f.StringColor, s)
 }
 
