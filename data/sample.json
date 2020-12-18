@@ -1,0 +1,4 @@
+{
+    "xml":"<fuga><foo>bar</foo></fuga>",
+    "json":"{\"foo\":\"bar\"}"
+}
