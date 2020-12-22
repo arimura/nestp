@@ -1,17 +1,17 @@
 # nestp
-Pretty print nested json/xml data in string.
+Pretty print json/xml in json.
 Nestp is based on [go-prettyjson](https://github.com/hokaccha/go-prettyjson). 
 
 ## Example
 ```
-$ echo '{"hoge":"<?xml version=\"1.0\"?><foo>bar</foo>"}' | go run cmd/main.go
+$ echo '{"json":"{\"key\":\"val\"}","xml":"<?xml version=\"1.0\"?><foo>bar</foo>"}' | go run cmd/main.go
 {
-  "hoge": "
+  "json": {
+      "key": "val"
+    },
+  "xml": "
     <?xml version=\"1.0\"?>
     <foo>bar
     </foo>"
 }
 ```
-
-## Support 
-Currently only supported xml in JSON string.
