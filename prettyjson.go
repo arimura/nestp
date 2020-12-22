@@ -44,6 +44,14 @@ type Formatter struct {
 	Newline string
 }
 
+type stringType int
+
+const (
+	plainVal stringType = iota
+	xmlVal
+	jsonVal
+)
+
 // NewFormatter returns a new formatter with following default values.
 func NewFormatter() *Formatter {
 	return &Formatter{
@@ -118,11 +126,14 @@ func (f *Formatter) pretty(v interface{}, depth int) string {
 
 func (f *Formatter) processString(s string, depth int) string {
 	//check xml or not
-	isXML := false
+	t := plainVal
 	if xml.Unmarshal([]byte(s), new(interface{})) == nil {
-		isXML = true
+		t = xmlVal
+	} else if json.Unmarshal([]byte(s), new(interface{})) == nil {
+		t = jsonVal
 	}
 
+	ts := s
 	buf := &bytes.Buffer{}
 	encoder := json.NewEncoder(buf)
 	encoder.SetEscapeHTML(false)
@@ -130,12 +141,21 @@ func (f *Formatter) processString(s string, depth int) string {
 	s = string(buf.Bytes())
 	s = strings.TrimSuffix(s, "\n")
 
-	if isXML {
+	if t == xmlVal {
 		//format after JSON encoding
 		p := f.generateIndent(depth)
 		s = xmlfmt.FormatXML(s, p, "  ")
 		//remove first indent string
 		s = s[len(p):]
+	} else if t == jsonVal {
+		var v interface{}
+		decoder := json.NewDecoder(bytes.NewReader([]byte(ts)))
+		decoder.UseNumber()
+		if err := decoder.Decode(&v); err != nil {
+			panic(err)
+		}
+
+		s = f.pretty(v, depth+1)
 	}
 
 	return f.sprintColor(f.StringColor, s)
